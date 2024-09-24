@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Moderation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #response {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Content Moderation Tool</h1>
+    <form id="moderation-form">
+        <textarea id="content" rows="4" placeholder="Enter content to moderate..."></textarea>
+        <button type="submit">Moderate Content</button>
+    </form>
+    <div id="response"></div>
+
+   <script>
+    document.getElementById('moderation-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const content = document.getElementById('content').value;
+
+        const responseDiv = document.getElementById('response');
+        responseDiv.innerHTML = '';
+
+        try {
+            const response = await fetch('http://127.0.0.1:5000/api/moderate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                responseDiv.innerHTML = `<h2>Prediction:</h2><p>${data.prediction}</p>`;
+            } else {
+                responseDiv.innerHTML = `<h2>Error:</h2><p>${data.error}</p>`;
+            }
+        } catch (error) {
+            responseDiv.innerHTML = `<h2>Network Error:</h2><p>${error.message}</p>`;
+        }
+    });
+</script>
+   </body>
+   </html>
